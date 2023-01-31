@@ -4,51 +4,60 @@ from datetime import date, datetime, timedelta
 import platform
 import shlex
 
-# Downloads - if added later than 1 week ago send to trash
-# Desktop Archive - if added later than 1 week ago send to trash
-# Desktop - if added later than 1 hour, and not folder, and not application, and not alias. Move to Desktop Archive.
-
 
 def main():
     desktop = '/Users/ajardine/Desktop/'
     desktop_archive = '/Users/ajardine/Desktop/Desktop Archive/'
     downloads = '/Users/ajardine/Downloads/'
     trash = '/Users/ajardine/.Trash'
+
+# Desktop - if added later than 1 hour, and not folder, and not application, and not alias. Move to Desktop Archive.
     loop_through_files_and_move(
-        source_directory=desktop, destination_directory=desktop_archive, time_before_move=1, move_folders=False)
+        source_directory=desktop,
+        destination_directory=desktop_archive,
+        hours_before_move=1,
+        move_folders=False)
+
+# Desktop Archive - if added later than 1 week ago send to trash
     loop_through_files_and_move(source_directory=desktop_archive,
-                                destination_directory=trash, time_before_move=168, move_folders=True)
+                                destination_directory=trash,
+                                hours_before_move=168,
+                                move_folders=True)
+
+# Downloads - if added later than 1 week ago send to trash
     loop_through_files_and_move(
-        source_directory=downloads, destination_directory=trash, time_before_move=168, move_folders=True)
+        source_directory=downloads,
+        destination_directory=trash,
+        hours_before_move=168,
+        move_folders=True)
 
 
-def loop_through_files_and_move(source_directory, destination_directory, time_before_move, move_folders):
+def loop_through_files_and_move(source_directory, destination_directory, hours_before_move, move_folders):
     for source_file_name in listdir(source_directory):
         fullpath = source_directory+source_file_name
-        print(f"reviewing {source_file_name}")
-        if is_file_right_type_to_move(fullpath,move_folders):
+        #print(f"reviewing {source_file_name}")
+        if is_file_right_type_to_move(fullpath, move_folders):
             st = get_when_file_was_last_changed(fullpath)
             # some files don't have a datetime (ie it's None), so we skip them.
             if not convert_to_datetime(st):
-                print(f'skipping {source_file_name} becausee datetime is none')
+                #print(f'skipping {source_file_name} becausee datetime is none')
                 continue
             datetime_file_moved_into_folder = convert_to_datetime(st)
             time_since_moved_into_folder = datetime.now()-datetime_file_moved_into_folder
             # use < for testing and hardcode 1 hour.
-            if time_since_moved_into_folder > timedelta(hours=time_before_move):
+            if time_since_moved_into_folder > timedelta(hours=hours_before_move):
                 move_file_to_folder(
                     f"{fullpath}", f"{destination_directory}{source_file_name}")
 
 # this code is stolen from https://drscotthawley.github.io/blog/2018/02/21/Resolving-OSX-Aliases.html
 
-def is_file_right_type_to_move(fullpath,move_folders):
+
+def is_file_right_type_to_move(fullpath, move_folders):
     if path.isfile(fullpath) and (not isAlias(fullpath)):
         return True
-    if path.isdir(fullpath) and move_folders==True:
+    if path.isdir(fullpath) and move_folders == True:
         return True
     return False
-
-
 
 
 def isAlias(pathe, already_checked_os=False):
@@ -85,7 +94,7 @@ def isAlias(pathe, already_checked_os=False):
 
 
 def move_file_to_folder(original_path, new_path):
-    print(f"moving {original_path} to {new_path}")
+    #print(f"moving {original_path} to {new_path}")
     rename(original_path, new_path)
 
 
@@ -104,4 +113,5 @@ def convert_to_datetime(st):
         return None
 
 
-main()
+if __name__ == "__main__":
+    main()
