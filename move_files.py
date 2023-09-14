@@ -6,10 +6,10 @@ import shlex
 
 
 def main():
-    desktop = '/Users/ajardine/Desktop/'
-    desktop_archive = '/Users/ajardine/Desktop/Desktop Archive/'
-    downloads = '/Users/ajardine/Downloads/'
-    trash = '/Users/ajardine/.Trash'
+    desktop = path.expanduser('~/Desktop/')
+    desktop_archive = path.expanduser('~/Desktop/Desktop Archive/')
+    downloads = path.expanduser('~/Downloads/')
+    trash = path.expanduser('~/.Trash')
 
 # Desktop - if added later than 1 hour, and not folder, and not application, and not alias. Move to Desktop Archive.
     loop_through_files_and_move(
