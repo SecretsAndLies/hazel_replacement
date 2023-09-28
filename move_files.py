@@ -4,7 +4,6 @@ from datetime import date, datetime, timedelta
 import platform
 import shlex
 
-
 def main():
     desktop = path.expanduser('~/Desktop/')
     desktop_archive = path.expanduser('~/Desktop/Desktop Archive/')
